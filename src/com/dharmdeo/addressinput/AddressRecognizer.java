@@ -357,7 +357,7 @@ public class AddressRecognizer {
 	};
 
 	public void finish() {
-		/* Destroy the instances of the speech
+		/* Destroy the instances of the speec
 		 * recognizer and the text to speech
 		 * engine
 		 */
