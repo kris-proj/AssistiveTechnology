@@ -168,6 +168,13 @@ public class WeatherBug implements LocationListener {
 		background.start();
 	}
 
+	/**
+	 * This method updates the 5 day forecast after the URL has been tampered by
+	 * the other forecast update methods (one for zip and one for location).
+	 * This method will notify the handler when all data has been downloaded and
+	 * parsed. Message dispatched to the handler will have it's arg1 set to
+	 * WeatherBug.FORECAST to indicate the forecast was updated.
+	 */
 	private void updateForecast() {
 		/*
 		 * Create a new thread to run in the background. This is to ensure the
@@ -227,18 +234,18 @@ public class WeatherBug implements LocationListener {
 						low = dayForecast.getString("low");
 						title = dayForecast.getString("title");
 						day = new DailyForecast(title, high, low);
-						
+
 						// Retrieve and add the day details for each day
 						desc = dayForecast.getString("dayDesc");
 						pred = dayForecast.getString("dayPred");
 						name = dayForecast.getString("dayTitle");
 						day.setDayDetails(desc, pred, name);
-						
+
 						// Retrieve and add the night details for each day
 						desc = dayForecast.getString("nightDesc");
 						pred = dayForecast.getString("nightPred");
 						name = dayForecast.getString("nightTitle");
-						
+
 						// Add the day to the weekly forecast
 						weeklyForecast.add(day);
 						Log.i("WeatherBug", day.toString());
@@ -278,11 +285,15 @@ public class WeatherBug implements LocationListener {
 		background.start();
 	}
 
-	public void updateCurrentWithZip() {
+	/**
+	 * 
+	 */
+	public void updateCurrentWithZip(String zip) {
 		/*
 		 * Modifying the base url for hourly updates to include the correct zip
 		 * code and API key.
 		 */
+		this.zip = zip;
 		urlString = baseURL_hourly_zip.replace("ZZZZZ", zip);
 		urlString = urlString.replace("XXXXX", APIKey);
 		// Call the generic update function to get the current weather
@@ -380,16 +391,6 @@ public class WeatherBug implements LocationListener {
 		return desc;
 	}
 
-	/**
-	 * This allows changing the zip code that will be used to update the
-	 * weather.
-	 * 
-	 * @param x
-	 *            The new zip code.
-	 */
-	public void setZip(String x) {
-		zip = x;
-	}
 
 	// ===============LOCATION LISTENER METHODS===========================
 
