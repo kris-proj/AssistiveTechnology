@@ -60,6 +60,7 @@ public class WeatherBug implements LocationListener {
 	private boolean forecastUpdate = false;
 
 	ArrayList<DailyForecast> weeklyForecast;
+	ArrayList<HourlyForecast> hourlyForecast;
 
 	private String urlString; // used when requesting data from WeatherBug
 
@@ -131,16 +132,35 @@ public class WeatherBug implements LocationListener {
 					 * certain hour's weather data. The first JSON object is the
 					 * current weather status.
 					 */
-					JSONArray hourlyForecast = json
+					JSONArray hourlyForecastList = json
 							.getJSONArray("forecastHourlyList");
 
-					// Pick the first JSON object from the array
+/*					// Pick the first JSON object from the array
 					JSONObject hour1 = hourlyForecast.getJSONObject(0);
 
 					// Obtain the temperature and description of the current
 					// weather
 					temp = hour1.getInt("temperature");
-					desc = hour1.getString("desc");
+					desc = hour1.getString("desc");*/
+					JSONObject hour;
+					HourlyForecast forecast;
+					for(int i = 0;i<hourlyForecastList.length();i++){
+						hour = hourlyForecastList.getJSONObject(i);
+						forecast = new HourlyForecast(
+								hour.getInt("dateTime"),
+								hour.getInt("temperature"),
+								hour.getString("desc"),
+								hour.getString("skyCover"),
+								hour.getString("chancePrecip"),
+								hour.getString("feelsLike"),
+								hour.getString("feelsLikeLabel"),
+								hour.getString("windDir"),
+								hour.getString("windSpeed"),
+								hour.getString("dewPoint"),
+								hour.getString("humidity"));
+						Log.i("WeatherBug",forecast.getTemp());
+						hourlyForecast.add(forecast);
+					}
 
 					// A new runnable to post to the UI thread
 					Runnable update = new Runnable() {
@@ -403,30 +423,16 @@ public class WeatherBug implements LocationListener {
 	}
 
 	/**
-	 * Retrieve as list of the daily forecasts 
+	 * Retrieve as list of the daily forecasts
 	 * 
 	 * @return A list of the forecast for each of the next 5 days
 	 */
 	public ArrayList<DailyForecast> get5DayForecast() {
 		return weeklyForecast;
 	}
-
-	/**
-	 * This method retrieves the temperature of the current weather
-	 * 
-	 * @return The current temperature
-	 */
-	public int getTemp() {
-		return temp;
-	}
-
-	/**
-	 * This method retrieves the condition of the current weather conditions.
-	 * 
-	 * @return The current weather conditions
-	 */
-	public String getDescription() {
-		return desc;
+	
+	public ArrayList<HourlyForecast> getHourlyForecast(){
+		return hourlyForecast;
 	}
 
 	/**
@@ -444,9 +450,9 @@ public class WeatherBug implements LocationListener {
 	 */
 	private void setCity(Address address) {
 		city = address.getSubLocality();
-		
+
 		// remove any null subLocality
-		if(city == null)
+		if (city == null)
 			city = "";
 		else
 			city += ", ";

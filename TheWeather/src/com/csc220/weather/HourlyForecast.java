@@ -27,4 +27,8 @@ public class HourlyForecast {
 		dewPoint = dp;
 		humidity = h;
 	}
+	
+	public String getTemp(){
+		return Integer.toString(temp);
+	}
 }

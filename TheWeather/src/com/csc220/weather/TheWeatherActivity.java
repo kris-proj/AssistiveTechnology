@@ -24,7 +24,7 @@ public class TheWeatherActivity extends Activity {
 				switch (msg.arg1) {
 				case WeatherBug.CURRENT:
 					stuff = wb.getCity() + "\n\n" + "Current Temp: "
-							+ wb.getTemp() + " Desc: " + wb.getDescription();
+							+ wb.getHourlyForecast().get(0).getTemp();
 					tv.setText(stuff);
 					tv.invalidate();
 					break;
