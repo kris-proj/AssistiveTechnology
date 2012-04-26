@@ -1,5 +1,7 @@
 package com.csc220.weather;
 
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
@@ -7,8 +9,8 @@ import android.os.Message;
 import android.widget.TextView;
 
 public class TheWeatherActivity extends Activity {
-	WeatherBug wb;
-
+	private WeatherBug wb;
+	private ArrayList<DailyForecast> fiveDayForecast;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -22,11 +24,14 @@ public class TheWeatherActivity extends Activity {
 					tv.setText("Current Temp: " + wb.getTemp() + " Desc: "
 							+ wb.getDescription());
 					tv.invalidate();
+
+				case WeatherBug.FORECAST:
+					break;
 				}
 				super.handleMessage(msg);
 			}
-		},this);
+		}, this);
 
-		wb.updateForecastWithZip("10001");
+		wb.updateForecastWithLoc();
 	}
 }

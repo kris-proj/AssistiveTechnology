@@ -352,6 +352,7 @@ public class WeatherBug implements LocationListener {
 					// weather
 					if (forecastUpdate) {
 						updateForecast();
+						forecastUpdate = false;
 					} else {
 						updateCurent();
 					}
@@ -375,9 +376,14 @@ public class WeatherBug implements LocationListener {
 		updateCurrentWithLoc();
 		// We are not longer updating the forecast. Allows today's hourly
 		// updates to occur normally again
-		forecastUpdate = false;
 	}
 
+	/**
+	 * Update the 5 day forecast with a zip code
+	 * 
+	 * @param zip
+	 *            The zip to use for the 5 day forecast
+	 */
 	public void updateForecastWithZip(String zip) {
 		this.zip = zip;
 		// Place the zip and API key into the corresponding base URL
@@ -385,6 +391,15 @@ public class WeatherBug implements LocationListener {
 		urlString = urlString.replace("XXXXX", APIKey);
 		// Call the generic update function to get the current weather
 		updateForecast();
+	}
+
+	/**
+	 * Retrieve as list of the daily forecasts
+	 * 
+	 * @return A list of the forecast for each of the next 5 days
+	 */
+	public ArrayList<DailyForecast> get5DayForecast() {
+		return weeklyForecast;
 	}
 
 	/**
