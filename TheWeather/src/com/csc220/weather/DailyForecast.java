@@ -36,4 +36,31 @@ public class DailyForecast {
 		nightTitle = name;
 	}
 	
+	public String getTitle(){
+		return title;
+	}
+	
+	public String getHigh(){
+		return high;
+	}
+	
+	public String getLow(){
+		return low;
+	}
+	
+	public String getDayDescription(){
+		return dayDesc;
+	}
+	
+	public String getDayPrediction(){
+		return dayPred;
+	}
+	
+	public String getNightDescription(){
+		return nightDesc;
+	}
+	
+	public String getNightPrediction(){
+		return nightPred;
+	}
 }

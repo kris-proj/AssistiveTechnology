@@ -11,6 +11,7 @@ import android.widget.TextView;
 public class TheWeatherActivity extends Activity {
 	private WeatherBug wb;
 	private ArrayList<DailyForecast> fiveDayForecast;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -19,16 +20,18 @@ public class TheWeatherActivity extends Activity {
 		wb = new WeatherBug(new Handler() {
 			@Override
 			public void handleMessage(Message msg) {
+				String stuff;
 				switch (msg.arg1) {
 				case WeatherBug.CURRENT:
-					tv.setText("Current Temp: " + wb.getTemp() + " Desc: "
-							+ wb.getDescription());
+					stuff = wb.getCity() + "\n\n" + "Current Temp: "
+							+ wb.getTemp() + " Desc: " + wb.getDescription();
+					tv.setText(stuff);
 					tv.invalidate();
-
+					break;
 				case WeatherBug.FORECAST:
-					String stuff = wb.getCity() + "\n\n";
+					stuff = wb.getCity() + "\n\n";
 					fiveDayForecast = wb.get5DayForecast();
-					for(int i = 0;i<fiveDayForecast.size();i++){
+					for (int i = 0; i < fiveDayForecast.size(); i++) {
 						stuff += fiveDayForecast.get(i).toString() + "\n\n";
 					}
 					tv.setText(stuff);

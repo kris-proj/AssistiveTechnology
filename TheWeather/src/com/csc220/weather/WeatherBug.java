@@ -444,7 +444,13 @@ public class WeatherBug implements LocationListener {
 	 */
 	private void setCity(Address address) {
 		city = address.getSubLocality();
-		city += ", " + address.getAdminArea();
+		
+		// remove any null subLocality
+		if(city == null)
+			city = "";
+		else
+			city += ", ";
+		city += address.getAdminArea();
 	}
 
 	/**
