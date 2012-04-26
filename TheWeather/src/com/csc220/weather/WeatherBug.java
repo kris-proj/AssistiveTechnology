@@ -142,9 +142,10 @@ public class WeatherBug implements LocationListener {
 					// weather
 					temp = hour1.getInt("temperature");
 					desc = hour1.getString("desc");*/
+					hourlyForecast = new ArrayList<HourlyForecast>();
 					JSONObject hour;
 					HourlyForecast forecast;
-					for(int i = 0;i<hourlyForecastList.length();i++){
+					for(int i = 0;i<hourlyForecastList.length()&&i<8;i++){
 						hour = hourlyForecastList.getJSONObject(i);
 						forecast = new HourlyForecast(
 								hour.getInt("dateTime"),
