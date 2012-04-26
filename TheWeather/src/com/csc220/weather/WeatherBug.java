@@ -286,7 +286,11 @@ public class WeatherBug implements LocationListener {
 	}
 
 	/**
+	 * This allows you to get the weather (hourly) at the specified zip code for
+	 * the current day
 	 * 
+	 * @param zip
+	 *            The zip code to get weather information about
 	 */
 	public void updateCurrentWithZip(String zip) {
 		/*
@@ -300,6 +304,10 @@ public class WeatherBug implements LocationListener {
 		updateCurent();
 	}
 
+	/**
+	 * Update the current weather using the device's location (via Network
+	 * location)
+	 */
 	public void updateCurrentWithLoc() {
 
 		// Start listening for location updates
@@ -354,6 +362,11 @@ public class WeatherBug implements LocationListener {
 		wait.start();
 	}
 
+	/**
+	 * Get the 5 day forecast of the user's current location (Network Location).
+	 * The handler will be notified that the forecast is updated (the message's
+	 * arg1 will be set to WeatherBug.FORECAST)
+	 */
 	public void updateForecastWithLoc() {
 		// This boolean is used to call the updateForecast method later from the
 		// updateCurrentWithLoc method.
@@ -365,7 +378,8 @@ public class WeatherBug implements LocationListener {
 		forecastUpdate = false;
 	}
 
-	public void updateForecastWithZip() {
+	public void updateForecastWithZip(String zip) {
+		this.zip = zip;
 		// Place the zip and API key into the corresponding base URL
 		urlString = baseURL_forecast_zip.replace("ZZZZZ", zip);
 		urlString = urlString.replace("XXXXX", APIKey);
@@ -390,7 +404,6 @@ public class WeatherBug implements LocationListener {
 	public String getDescription() {
 		return desc;
 	}
-
 
 	// ===============LOCATION LISTENER METHODS===========================
 
