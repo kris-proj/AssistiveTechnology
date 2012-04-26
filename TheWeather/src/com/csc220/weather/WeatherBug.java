@@ -403,7 +403,7 @@ public class WeatherBug implements LocationListener {
 	}
 
 	/**
-	 * Retrieve as list of the daily forecasts
+	 * Retrieve as list of the daily forecasts 
 	 * 
 	 * @return A list of the forecast for each of the next 5 days
 	 */
