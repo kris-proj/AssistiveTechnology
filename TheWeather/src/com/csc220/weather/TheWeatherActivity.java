@@ -41,6 +41,6 @@ public class TheWeatherActivity extends Activity {
 			}
 		}, this);
 
-		wb.updateForecastWithZip("11419");
+		wb.updateCurrentWithLoc();
 	}
 }
