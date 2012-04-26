@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Magnetic Feild Compass" 
+        android:textSize="25sp"
+        android:padding="15dp"
+        android:keepScreenOn="true"/>
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="100" 
+        android:gravity="center_vertical">
+        <TextView
+            android:id="@+id/deg1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="30"
+            android:gravity="center_vertical"
+            android:textSize="20sp"
+            android:paddingLeft="20dp" />
+        <TextView
+            android:id="@+id/nsew1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="80sp" 
+            android:gravity="center_horizontal"
+            android:layout_weight="70"/>
+    </LinearLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="GPS Bearing Compass" 
+        android:textSize="25sp"
+        android:padding="15dp"/>
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="100" 
+        android:gravity="center_vertical">
+        <TextView
+            android:id="@+id/deg2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="30"
+            android:gravity="center_vertical"
+            android:textSize="20sp"
+            android:paddingLeft="20dp" />
+
+        <TextView
+            android:id="@+id/nsew2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="80sp" 
+            android:gravity="center_horizontal"
+            android:layout_weight="70"/>
+    </LinearLayout>
+</LinearLayout>
