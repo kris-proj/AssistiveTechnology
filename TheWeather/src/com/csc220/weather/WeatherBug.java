@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,24 +30,35 @@ public class WeatherBug implements LocationListener {
 	private JSONObject json;
 
 	// The base URL for hourly forecast with zip
-	private String baseURL_hourly_zip = "http://i.wxbug.net/REST/Direct/GetForecastHourly.ashx?zip=ZZZZZ&ht=t&ht=d&api_key=XXXXX";
+	private String baseURL_hourly_zip = "http://i.wxbug.net/REST/Direct/GetForecastHourly.ashx?"
+			+ "zip=ZZZZZ&ht=t&ht=d&ht=sc&ht=cp&ht=fl&ht=wd&ht=ws&ht=h&api_key=XXXXX";
 	// The base URL for hourly forecast with lat and lon
-	private String baseURL_hourly_loc = "http://i.wxbug.net/REST/Direct/GetForecastHourly.ashx?la=LAT&lo=LONG&ht=t&ht=i&ht=d&api_key=XXXXX";
+	private String baseURL_hourly_loc = "http://i.wxbug.net/REST/Direct/GetForecastHourly.ashx?"
+			+ "la=LAT&lo=LONG&ht=t&ht=d&ht=sc&ht=cp&ht=fl&ht=wd&ht=ws&ht=h&api_key=XXXXX";
+	// The base URL for weekly forecast  (location)
+	private String baseURL_forecast_loc = "http://i.wxbug.net/REST/Direct/GetForecast.ashx?"
+			+ "la=LAT&lo=LONG&nf=7&l=en&c=US&api_key=XXXXX";
+	// The base URL for weekly forecast  (zip)
+	private String baseURL_forecast_zip = "http://i.wxbug.net/REST/Direct/GetForecast.ashx?"
+			+ "zip=ZZZZZ&nf=7&l=en&c=US&api_key=XXXXX";
 
 	private Handler UIHandler; // Used to handle updates from WeatherBug object
 	private LocationManager locManager;
 
 	private String data = ""; // stores the data read from server
-	private String zip = "11419"; // A default zip code to use
+	private String zip = "10001"; // A default zip code to use
 	private double lat = 0; // latitude of current network location
 	private double log = 0; // longiture of current network location
 	private int temp = 0; // Temperature of current weather
 	private String desc; // Description of current weather
 
+	private boolean forecastUpdate = false;
+
 	private String urlString; // used when requesting data from WeatherBug
 
 	// Constants to indicate what has been updated
 	public static final int CURRENT = 1;
+	public static final int FORECAST = 2;
 
 	/**
 	 * @param handler
@@ -70,7 +83,7 @@ public class WeatherBug implements LocationListener {
 	 * This is a generic update function. The string storing the URL is changed
 	 * using the other update functions
 	 */
-	public void updateCurent() {
+	private void updateCurent() {
 		/*
 		 * Create a new thread to run in the background. This is to ensure the
 		 * UI does not freeze up while retrieving data from the web server.
@@ -152,6 +165,83 @@ public class WeatherBug implements LocationListener {
 		background.start();
 	}
 
+	private void updateForecast() {
+		/*
+		 * Create a new thread to run in the background. This is to ensure the
+		 * UI does not freeze up while retrieving data from the web server.
+		 * Without this background thread, the UI would stall until the data is
+		 * downloaded.
+		 */
+		Thread background = new Thread() {
+			@Override
+			public void run() {
+
+				Log.i("WeatherBug", urlString);
+				// Download the JSON data
+				try {
+					// Open a new URL Connection and download the data
+					URL url = new URL(urlString);
+					URLConnection weatherBugConnection = url.openConnection();
+					BufferedReader input = new BufferedReader(
+							new InputStreamReader(
+									weatherBugConnection.getInputStream()));
+					String inputLine;
+					// Keep reading lines until there is no more to be read
+					while ((inputLine = input.readLine()) != null) {
+						data += inputLine;
+					}
+					Log.i("WeatherBug", data);
+
+					// Create a JSON object from the data that was read
+					json = new JSONObject(data);
+					data = "";
+					input.close(); // Close the input stream
+					/*
+					 * Obtain a list of the hourly forecast data. This is a list
+					 * of JSON objects which each contain information about a
+					 * certain hour's weather data. The first JSON object is the
+					 * current weather status.
+					 */
+					JSONArray forecast = json.getJSONArray("forecastList");
+
+					for (int i = 0; i < 7; i++) {
+
+					}
+
+					// A new runnable to post to the UI thread
+					Runnable update = new Runnable() {
+
+						@Override
+						public void run() {
+							/*
+							 * Create and send a message to the handler running
+							 * on the UI thread indicating that the current
+							 * weather status has been updated.
+							 */
+							Message msg = new Message();
+							msg.arg1 = FORECAST;
+							UIHandler.dispatchMessage(msg);
+						}
+					};
+					/*
+					 * Post the runnable to the handler. This allows the handler
+					 * to continue to run on the UI thread so the views can be
+					 * updated
+					 */
+					UIHandler.post(update);
+
+				} catch (MalformedURLException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}
+		};
+		background.start();
+	}
+
 	public void updateCurrentWithZip() {
 		/*
 		 * Modifying the base url for hourly updates to include the correct zip
@@ -194,13 +284,22 @@ public class WeatherBug implements LocationListener {
 					 * Modify the base url for hourly updates to include the
 					 * correct latitude and longitude
 					 */
-					urlString = baseURL_hourly_loc.replace("LAT",
-							Double.toString(lat));
+					if (forecastUpdate) {
+						urlString = baseURL_forecast_loc.replace("LAT",
+								Double.toString(lat));
+					} else {
+						urlString = baseURL_hourly_loc.replace("LAT",
+								Double.toString(lat));
+					}
 					urlString = urlString.replace("LONG", Double.toString(log));
 					urlString = urlString.replace("XXXXX", APIKey);
 					// Call the generic update function to get the current
 					// weather
-					updateCurent();
+					if (forecastUpdate) {
+						updateForecast();
+					} else {
+						updateCurent();
+					}
 					super.run();
 				}
 			}
@@ -208,9 +307,23 @@ public class WeatherBug implements LocationListener {
 		wait.start();
 	}
 
-	public void updateForecast() {
-		// TODO Implement forecast update
-		// TODO Implement forecast class (to store each day's forecast)
+	public void updateForecastWithLoc() {
+		// This boolean is used to call the updateForecast method later from the
+		// updateCurrentWithLoc method.
+		forecastUpdate = true;
+		// Simplifies getting the location
+		updateCurrentWithLoc();
+		// We are not longer updating the forecast. Allows today's hourly
+		// updates to occur normally again
+		forecastUpdate = false;
+	}
+
+	public void updateForecastWithZip() {
+		// Place the zip and API key into the corresponding base URL
+		urlString = baseURL_forecast_zip.replace("ZZZZZ", zip);
+		urlString = urlString.replace("XXXXX", APIKey);
+		// Call the generic update function to get the current weather
+		updateForecast();
 	}
 
 	/**
