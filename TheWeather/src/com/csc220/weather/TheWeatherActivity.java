@@ -26,12 +26,18 @@ public class TheWeatherActivity extends Activity {
 					tv.invalidate();
 
 				case WeatherBug.FORECAST:
+					String stuff = wb.getCity() + "\n\n";
+					fiveDayForecast = wb.get5DayForecast();
+					for(int i = 0;i<fiveDayForecast.size();i++){
+						stuff += fiveDayForecast.get(i).toString() + "\n\n";
+					}
+					tv.setText(stuff);
 					break;
 				}
 				super.handleMessage(msg);
 			}
 		}, this);
 
-		wb.updateForecastWithLoc();
+		wb.updateForecastWithZip("11419");
 	}
 }

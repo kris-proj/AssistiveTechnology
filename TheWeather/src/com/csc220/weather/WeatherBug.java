@@ -12,6 +12,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import android.content.Context;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -45,6 +47,8 @@ public class WeatherBug implements LocationListener {
 
 	private Handler UIHandler; // Used to handle updates from WeatherBug object
 	private LocationManager locManager;
+	private Geocoder geocoder;
+	private String city;
 
 	private String data = ""; // stores the data read from server
 	private String zip = "10001"; // A default zip code to use
@@ -75,6 +79,10 @@ public class WeatherBug implements LocationListener {
 		// The location manager for getting the coarse location of the user
 		locManager = (LocationManager) context
 				.getSystemService(Context.LOCATION_SERVICE);
+
+		// A geocoder object to get a human readable name for the location
+
+		geocoder = new Geocoder(context);
 	}
 
 	/**
@@ -386,6 +394,7 @@ public class WeatherBug implements LocationListener {
 	 */
 	public void updateForecastWithZip(String zip) {
 		this.zip = zip;
+		getCityFromZip(zip);
 		// Place the zip and API key into the corresponding base URL
 		urlString = baseURL_forecast_zip.replace("ZZZZZ", zip);
 		urlString = urlString.replace("XXXXX", APIKey);
@@ -420,6 +429,39 @@ public class WeatherBug implements LocationListener {
 		return desc;
 	}
 
+	/**
+	 * @return The city for the current weather forecast
+	 */
+	public String getCity() {
+		return city;
+	}
+
+	/**
+	 * Set the city using the location information
+	 * 
+	 * @param address
+	 *            The address to use
+	 */
+	private void setCity(Address address) {
+		city = address.getSubLocality();
+		city += ", " + address.getAdminArea();
+	}
+
+	/**
+	 * Gets the corresponding address info from a zip
+	 * 
+	 * @param zip
+	 *            The zip to use
+	 */
+	private void getCityFromZip(String zip) {
+		try {
+			Address address = geocoder.getFromLocationName(zip, 1).get(0);
+			setCity(address);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	// ===============LOCATION LISTENER METHODS===========================
 
 	@Override
@@ -430,6 +472,16 @@ public class WeatherBug implements LocationListener {
 			log = location.getLongitude();
 			// Stop listening for updates (only need one location)
 			locManager.removeUpdates(this);
+
+			// Reverse geocoding
+
+			try {
+				Address address = (Address) geocoder.getFromLocation(lat, log,
+						1).get(0);
+				setCity(address);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 
 			// Notify the location manager which is waiting for the location
 			locManager.notify();

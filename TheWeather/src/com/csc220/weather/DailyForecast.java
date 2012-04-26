@@ -21,7 +21,7 @@ public class DailyForecast {
 	}
 	
 	public String toString(){
-		return title+" Low: "+low+" High: "+high;
+		return title+"\n"+"Low: "+low+" High: "+high+"\n"+dayDesc+" "+dayPred;
 	}
 	
 	public void setDayDetails(String desc, String pred, String name){
