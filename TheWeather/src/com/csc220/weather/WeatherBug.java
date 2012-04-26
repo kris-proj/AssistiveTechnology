@@ -19,6 +19,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.widget.DialerFilter;
 
 /**
  * @author Dharmdeo Singh
@@ -35,12 +36,12 @@ public class WeatherBug implements LocationListener {
 	// The base URL for hourly forecast with lat and lon
 	private String baseURL_hourly_loc = "http://i.wxbug.net/REST/Direct/GetForecastHourly.ashx?"
 			+ "la=LAT&lo=LONG&ht=t&ht=d&ht=sc&ht=cp&ht=fl&ht=wd&ht=ws&ht=h&api_key=XXXXX";
-	// The base URL for weekly forecast  (location)
+	// The base URL for weekly forecast (location)
 	private String baseURL_forecast_loc = "http://i.wxbug.net/REST/Direct/GetForecast.ashx?"
-			+ "la=LAT&lo=LONG&nf=7&l=en&c=US&api_key=XXXXX";
-	// The base URL for weekly forecast  (zip)
+			+ "la=LAT&lo=LONG&nf=5&l=en&c=US&api_key=XXXXX";
+	// The base URL for weekly forecast (zip)
 	private String baseURL_forecast_zip = "http://i.wxbug.net/REST/Direct/GetForecast.ashx?"
-			+ "zip=ZZZZZ&nf=7&l=en&c=US&api_key=XXXXX";
+			+ "zip=ZZZZZ&nf=5&l=en&c=US&api_key=XXXXX";
 
 	private Handler UIHandler; // Used to handle updates from WeatherBug object
 	private LocationManager locManager;
@@ -53,6 +54,8 @@ public class WeatherBug implements LocationListener {
 	private String desc; // Description of current weather
 
 	private boolean forecastUpdate = false;
+
+	ArrayList<DailyForecast> weeklyForecast;
 
 	private String urlString; // used when requesting data from WeatherBug
 
@@ -197,15 +200,48 @@ public class WeatherBug implements LocationListener {
 					data = "";
 					input.close(); // Close the input stream
 					/*
-					 * Obtain a list of the hourly forecast data. This is a list
-					 * of JSON objects which each contain information about a
-					 * certain hour's weather data. The first JSON object is the
-					 * current weather status.
+					 * Obtain a list of the forecast data. This is a list of
+					 * JSON objects which each contain information about a
+					 * certain day's weather data. The first JSON object is the
+					 * today's weather status
 					 */
 					JSONArray forecast = json.getJSONArray("forecastList");
 
-					for (int i = 0; i < 7; i++) {
-
+					// An array list to store every day of the 5 day forecast
+					weeklyForecast = new ArrayList<DailyForecast>();
+					// Each day is a JSON object
+					JSONObject dayForecast = null;
+					String high, low, title, desc, pred, name;
+					DailyForecast day; // each day is a daily forecast object
+					for (int i = 0; i < 5; i++) {
+						/*
+						 * Get each of the 5 days requested from the JSONArray
+						 * and retrieve their high, low, and title. These are
+						 * the required fields for the DailyForecast
+						 * constructor. Create a DailyForecast object for each
+						 * day. Retrieve all the other information about each
+						 * day as well.
+						 */
+						dayForecast = forecast.getJSONObject(i);
+						high = dayForecast.getString("high");
+						low = dayForecast.getString("low");
+						title = dayForecast.getString("title");
+						day = new DailyForecast(title, high, low);
+						
+						// Retrieve and add the day details for each day
+						desc = dayForecast.getString("dayDesc");
+						pred = dayForecast.getString("dayPred");
+						name = dayForecast.getString("dayTitle");
+						day.setDayDetails(desc, pred, name);
+						
+						// Retrieve and add the night details for each day
+						desc = dayForecast.getString("nightDesc");
+						pred = dayForecast.getString("nightPred");
+						name = dayForecast.getString("nightTitle");
+						
+						// Add the day to the weekly forecast
+						weeklyForecast.add(day);
+						Log.i("WeatherBug", day.toString());
 					}
 
 					// A new runnable to post to the UI thread
