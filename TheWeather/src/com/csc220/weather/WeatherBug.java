@@ -327,6 +327,7 @@ public class WeatherBug implements LocationListener {
 		 * code and API key.
 		 */
 		this.zip = zip;
+		getCityFromZip(zip);
 		urlString = baseURL_hourly_zip.replace("ZZZZZ", zip);
 		urlString = urlString.replace("XXXXX", APIKey);
 		// Call the generic update function to get the current weather
@@ -458,6 +459,7 @@ public class WeatherBug implements LocationListener {
 		else
 			city += ", ";
 		city += address.getAdminArea();
+		Log.i("WeatherBug",city);
 	}
 
 	/**
