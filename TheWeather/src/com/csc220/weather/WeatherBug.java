@@ -135,20 +135,20 @@ public class WeatherBug implements LocationListener {
 					JSONArray hourlyForecastList = json
 							.getJSONArray("forecastHourlyList");
 
-/*					// Pick the first JSON object from the array
-					JSONObject hour1 = hourlyForecast.getJSONObject(0);
-
-					// Obtain the temperature and description of the current
-					// weather
-					temp = hour1.getInt("temperature");
-					desc = hour1.getString("desc");*/
+					/*
+					 * // Pick the first JSON object from the array JSONObject
+					 * hour1 = hourlyForecast.getJSONObject(0);
+					 * 
+					 * // Obtain the temperature and description of the current
+					 * // weather temp = hour1.getInt("temperature"); desc =
+					 * hour1.getString("desc");
+					 */
 					hourlyForecast = new ArrayList<HourlyForecast>();
 					JSONObject hour;
 					HourlyForecast forecast;
-					for(int i = 0;i<hourlyForecastList.length()&&i<8;i++){
+					for (int i = 0; i < hourlyForecastList.length() && i < 8; i++) {
 						hour = hourlyForecastList.getJSONObject(i);
-						forecast = new HourlyForecast(
-								hour.getInt("dateTime"),
+						forecast = new HourlyForecast(hour.getLong("dateTime"),
 								hour.getInt("temperature"),
 								hour.getString("desc"),
 								hour.getString("skyCover"),
@@ -159,7 +159,7 @@ public class WeatherBug implements LocationListener {
 								hour.getString("windSpeed"),
 								hour.getString("dewPoint"),
 								hour.getString("humidity"));
-						Log.i("WeatherBug",forecast.getTemp());
+						Log.i("WeatherBug", forecast.getTemp());
 						hourlyForecast.add(forecast);
 					}
 
@@ -432,8 +432,11 @@ public class WeatherBug implements LocationListener {
 	public ArrayList<DailyForecast> get5DayForecast() {
 		return weeklyForecast;
 	}
-	
-	public ArrayList<HourlyForecast> getHourlyForecast(){
+
+	/**
+	 * @return A list of the forecast for the next 8 hours
+	 */
+	public ArrayList<HourlyForecast> getHourlyForecast() {
 		return hourlyForecast;
 	}
 
@@ -459,7 +462,7 @@ public class WeatherBug implements LocationListener {
 		else
 			city += ", ";
 		city += address.getAdminArea();
-		Log.i("WeatherBug",city);
+		Log.i("WeatherBug", city);
 	}
 
 	/**

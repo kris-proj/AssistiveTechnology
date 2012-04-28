@@ -1,5 +1,9 @@
 package com.csc220.weather;
 
+/**
+ * @author Dharmdeo Singh
+ *
+ */
 public class DailyForecast {
 	private String title; // Day's title
 	
