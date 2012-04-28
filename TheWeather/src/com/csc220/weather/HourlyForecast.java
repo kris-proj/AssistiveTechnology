@@ -9,6 +9,7 @@ import java.util.Date;
 public class HourlyForecast {
 	private int temp; // The temperature for the particular time
 	private String time; // The time described by this HourlyForecast
+	long rawTime;
 
 	private String description; // A description about this hour
 	private String skyCover; // The sky cover percentage
@@ -20,6 +21,8 @@ public class HourlyForecast {
 								// forecast
 	private String dewPoint; // The dew point
 	private String humidity; // The humidity of the time
+	
+	private boolean outofscope = false;
 
 	/**
 	 * Create a HourlyForecast object to store all the information describing a
@@ -51,24 +54,30 @@ public class HourlyForecast {
 	public HourlyForecast(long time, int temp, String desc, String sc,
 			String cop, String fl, String fll, String wd, String ws, String dp,
 			String h) {
+		rawTime = time;
+		Date now = new Date();
+		if(now.getTime() > rawTime - 3600000)
+			outofscope = true;
+		else{
 		// Converting the time since epoch to a readable format
-		Date date = new Date(time);
-		this.time = date.toLocaleString();
-		int len = this.time.length();
-		// Filtering out only the time from the date
-		this.time = this.time.substring(len - 10, len);
+			Date date = new Date(time);
+			this.time = date.toLocaleString();
+			int len = this.time.length();
+			// Filtering out only the time from the date
+			this.time = this.time.substring(len - 11, len);
 
-		// Saving all the other relavent data
-		this.temp = temp;
-		description = desc;
-		skyCover = sc;
-		chanceOfPrecip = cop;
-		feelsLike = fl;
-		feelsLikeLabel = fll;
-		windDirection = wd;
-		windSpeed = ws;
-		dewPoint = dp;
-		humidity = h;
+			// Saving all the other relavent data
+			this.temp = temp;
+			description = desc;
+			skyCover = sc;
+			chanceOfPrecip = cop;
+			feelsLike = fl;
+			feelsLikeLabel = fll;
+			windDirection = wd;
+			windSpeed = ws;
+			dewPoint = dp;
+			humidity = h;
+		}
 	}
 
 	/**
@@ -146,5 +155,9 @@ public class HourlyForecast {
 	 */
 	public String getHumidity() {
 		return humidity;
+	}
+	
+	public boolean outOfScope(){
+		return outofscope;
 	}
 }

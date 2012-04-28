@@ -51,12 +51,8 @@ public class WeatherBug implements LocationListener {
 	private String city; // A string to store the info retreived from geocoder
 
 	private String data = ""; // stores the data read from server
-	private String zip = "10001"; // A default zip code to use
 	private double lat = 0; // latitude of current network location
 	private double log = 0; // longiture of current network location
-	private int temp = 0; // Temperature of current weather
-	private String desc; // Description of current weather
-
 	private boolean forecastUpdate = false;
 
 	ArrayList<DailyForecast> weeklyForecast; // stores the weekly forecast
@@ -146,7 +142,8 @@ public class WeatherBug implements LocationListener {
 					hourlyForecast = new ArrayList<HourlyForecast>();
 					JSONObject hour;
 					HourlyForecast forecast;
-					for (int i = 0; i < hourlyForecastList.length() && i < 8; i++) {
+					int j = 0;
+					for (int i = 0; i < hourlyForecastList.length() && i < 8+j; i++) {
 						hour = hourlyForecastList.getJSONObject(i);
 						forecast = new HourlyForecast(hour.getLong("dateTime"),
 								hour.getInt("temperature"),
@@ -160,7 +157,11 @@ public class WeatherBug implements LocationListener {
 								hour.getString("dewPoint"),
 								hour.getString("humidity"));
 						Log.i("WeatherBug", forecast.getTemp());
-						hourlyForecast.add(forecast);
+						if(!forecast.outOfScope()){
+							hourlyForecast.add(forecast);
+						}else{
+							j++;
+						}
 					}
 
 					// A new runnable to post to the UI thread
@@ -326,7 +327,6 @@ public class WeatherBug implements LocationListener {
 		 * Modifying the base url for hourly updates to include the correct zip
 		 * code and API key.
 		 */
-		this.zip = zip;
 		getCityFromZip(zip);
 		urlString = baseURL_hourly_zip.replace("ZZZZZ", zip);
 		urlString = urlString.replace("XXXXX", APIKey);
@@ -415,7 +415,6 @@ public class WeatherBug implements LocationListener {
 	 *            The zip to use for the 5 day forecast
 	 */
 	public void updateForecastWithZip(String zip) {
-		this.zip = zip;
 		getCityFromZip(zip);
 		// Place the zip and API key into the corresponding base URL
 		urlString = baseURL_forecast_zip.replace("ZZZZZ", zip);

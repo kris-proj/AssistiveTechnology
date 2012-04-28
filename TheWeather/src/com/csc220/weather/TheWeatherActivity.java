@@ -11,36 +11,63 @@ import android.widget.TextView;
 public class TheWeatherActivity extends Activity {
 	private WeatherBug wb;
 	private ArrayList<DailyForecast> fiveDayForecast;
+	private ArrayList<HourlyForecast> hourlyForecast;
+	private TextView tv;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-		final TextView tv = (TextView) findViewById(R.id.text);
-		wb = new WeatherBug(new Handler() {
+
+		tv = (TextView) findViewById(R.id.text);
+
+		//fiveDayForecast = new ArrayList<DailyForecast>();
+		//hourlyForecast = new ArrayList<HourlyForecast>();
+		
+		// A handler is needed to receive messages from weatherbug object
+		// It must have the handleMessage method overidden
+		Handler handler = new Handler() {
 			@Override
 			public void handleMessage(Message msg) {
-				String stuff;
 				switch (msg.arg1) {
 				case WeatherBug.CURRENT:
-					stuff = wb.getCity() + "\n\n" + "Current Temp: "
-							+ wb.getHourlyForecast().get(0).getTemp();
-					tv.setText(stuff);
-					tv.invalidate();
+					currentUpdated();
 					break;
 				case WeatherBug.FORECAST:
-					stuff = wb.getCity() + "\n\n";
-					fiveDayForecast = wb.get5DayForecast();
-					for (int i = 0; i < fiveDayForecast.size(); i++) {
-						stuff += fiveDayForecast.get(i).toString() + "\n\n";
-					}
-					tv.setText(stuff);
+					forecastUpdated();
 					break;
 				}
 				super.handleMessage(msg);
 			}
-		}, this);
+		};
 
+		wb = new WeatherBug(handler, this);
+		// Get the hourly forecast for the zip
 		wb.updateCurrentWithZip("11419");
+	}
+
+	public void currentUpdated() {
+		// The hourly forecast can be obtained with this method call. It
+		// returns an array list of hourly forecasts
+		
+		hourlyForecast = wb.getHourlyForecast();
+		
+		String mock;
+		mock = "Currently: " + hourlyForecast.get(0).getTemp() + " deg. "
+				+ hourlyForecast.get(0).getDescription() + "\n\n";
+		mock += "TODAY's FORECAST: \n\n";
+		int totalItems = hourlyForecast.size();
+		HourlyForecast temp;
+		for(int i = 0;i<totalItems;i++){
+			temp = hourlyForecast.get(i);
+			mock += temp.getTime() + " " + temp.getTemp() + " " + temp.getDescription() + "\n\n";
+		}
+		
+		tv.setText(mock);
+	}
+
+	public void forecastUpdated() {
+		// The weekly forecast is returned as an arraylist of daily forecasts
+		fiveDayForecast = wb.get5DayForecast();
 	}
 }
