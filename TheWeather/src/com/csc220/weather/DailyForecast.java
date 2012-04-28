@@ -2,69 +2,119 @@ package com.csc220.weather;
 
 /**
  * @author Dharmdeo Singh
- *
+ * 
  */
 public class DailyForecast {
 	private String title; // Day's title
-	
+
 	private String dayDesc; // description
 	private String dayPred; // prediction
 	private String dayTitle; // day's daytime title
-	
+
 	private String nightDesc; // night time description
 	private String nightPred; // night time prediction
 	private String nightTitle; // night time title
 
 	private String high; // high temperature
 	private String low; // low temperature
-	
+
+	/**
+	 * @param title
+	 *            The name of the day
+	 * @param high
+	 *            The high temperature for the day
+	 * @param low
+	 *            The Low temperature for the day
+	 */
 	public DailyForecast(String title, String high, String low) {
 		this.high = high;
 		this.low = low;
 		this.title = title;
 	}
-	
-	public String toString(){
-		return title+"\n"+"Low: "+low+" High: "+high+"\n"+dayDesc+" "+dayPred;
+
+	/*
+	 * Returns a printable version of the basic weather information for this day
+	 */
+	public String toString() {
+		return title + "\n" + "Low: " + low + " High: " + high + "\n" + dayDesc
+				+ " " + dayPred;
 	}
-	
-	public void setDayDetails(String desc, String pred, String name){
+
+	/**
+	 * @param desc
+	 *            Daytime description
+	 * @param pred
+	 *            Daytime prediction
+	 * @param name
+	 *            Title of the day (could be different than the day's name)
+	 */
+	public void setDayDetails(String desc, String pred, String name) {
 		dayDesc = desc;
 		dayPred = pred;
 		dayTitle = name;
 	}
-	
-	public void setNightDetails(String desc, String pred, String name){
+
+	/**
+	 * @param desc
+	 *            Night time description
+	 * @param pred
+	 *            Night time prediction
+	 * @param name
+	 *            Night time name
+	 */
+	public void setNightDetails(String desc, String pred, String name) {
 		nightDesc = desc;
 		nightPred = pred;
 		nightTitle = name;
 	}
-	
-	public String getTitle(){
+
+	/**
+	 * @return The days name
+	 */
+	public String getTitle() {
 		return title;
 	}
-	
-	public String getHigh(){
+
+	/**
+	 * @return The highest temperature predicted for the day
+	 */
+	public String getHigh() {
 		return high;
 	}
-	
-	public String getLow(){
+
+	/**
+	 * @return The lowest temperature predicted for the day
+	 */
+	public String getLow() {
 		return low;
 	}
-	
-	public String getDayDescription(){
+
+	/**
+	 * @return A short description of the day's weather.
+	 */
+	public String getDayDescription() {
 		return dayDesc;
 	}
-	
-	public String getDayPrediction(){
+
+	/**
+	 * @return A prediction about what will occur throughout the day and what to
+	 *         expect.
+	 */
+	public String getDayPrediction() {
 		return dayPred;
 	}
-	
-	public String getNightDescription(){
+
+	/**
+	 * @return A short description about the weather at night
+	 */
+	public String getNightDescription() {
 		return nightDesc;
 	}
-	
-	public String getNightPrediction(){
+
+	/**
+	 * @return A prediction about what will occur during the night
+	 */
+	public String getNightPrediction() {
 		return nightPred;
 	}
 }
