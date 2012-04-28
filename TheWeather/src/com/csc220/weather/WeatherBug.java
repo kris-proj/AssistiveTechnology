@@ -7,7 +7,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,7 +20,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.widget.DialerFilter;
 
 /**
  * @author Dharmdeo Singh
@@ -46,9 +44,11 @@ public class WeatherBug implements LocationListener {
 			+ "zip=ZZZZZ&nf=5&l=en&c=US&api_key=XXXXX";
 
 	private Handler UIHandler; // Used to handle updates from WeatherBug object
-	private LocationManager locManager;
-	private Geocoder geocoder;
-	private String city;
+	private LocationManager locManager; // Used to get the users current
+										// location
+	private Geocoder geocoder; // This is needed to reverse geocode the location
+								// to get a name
+	private String city; // A string to store the info retreived from geocoder
 
 	private String data = ""; // stores the data read from server
 	private String zip = "10001"; // A default zip code to use
@@ -59,8 +59,8 @@ public class WeatherBug implements LocationListener {
 
 	private boolean forecastUpdate = false;
 
-	ArrayList<DailyForecast> weeklyForecast;
-	ArrayList<HourlyForecast> hourlyForecast;
+	ArrayList<DailyForecast> weeklyForecast; // stores the weekly forecast
+	ArrayList<HourlyForecast> hourlyForecast; // stores the daily forecast
 
 	private String urlString; // used when requesting data from WeatherBug
 
