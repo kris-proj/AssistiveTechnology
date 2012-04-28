@@ -9,7 +9,6 @@ import java.util.Date;
 public class HourlyForecast {
 	private int temp; // The temperature for the particular time
 	private String time; // The time described by this HourlyForecast
-	long rawTime;
 
 	private String description; // A description about this hour
 	private String skyCover; // The sky cover percentage
@@ -54,9 +53,9 @@ public class HourlyForecast {
 	public HourlyForecast(long time, int temp, String desc, String sc,
 			String cop, String fl, String fll, String wd, String ws, String dp,
 			String h) {
-		rawTime = time;
+		// First make sure the data isnt old
 		Date now = new Date();
-		if(now.getTime() > rawTime - 3600000)
+		if(now.getTime() > time)
 			outofscope = true;
 		else{
 		// Converting the time since epoch to a readable format
