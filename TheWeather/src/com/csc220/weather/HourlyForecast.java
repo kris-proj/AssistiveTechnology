@@ -1,37 +1,64 @@
 package com.csc220.weather;
 
-import java.sql.Time;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import android.util.Log;
 
 /**
  * @author Dharmdeo Singh
- *
+ * 
  */
 public class HourlyForecast {
-	private int temp;
-	private String time;
+	private int temp; // The temperature for the particular time
+	private String time; // The time described by this HourlyForecast
 
-	private String description;
-	private String skyCover;
-	private String chanceOfPrecip;
-	private String feelsLike;
-	private String feelsLikeLabel;
-	private String windDirection;
-	private String windSpeed;
-	private String dewPoint;
-	private String humidity;
+	private String description; // A description about this hour
+	private String skyCover; // The sky cover percentage
+	private String chanceOfPrecip; // Chance of precipitation
+	private String feelsLike; // What it feels like
+	private String feelsLikeLabel; // A label for what it feels like
+	private String windDirection; // The wind direction for the time
+	private String windSpeed; // The wind speed predicted for this hourly
+								// forecast
+	private String dewPoint; // The dew point
+	private String humidity; // The humidity of the time
 
-	public HourlyForecast(long time,int temp, String desc, String sc, String cop,
-			String fl, String fll, String wd, String ws, String dp, String h) {
+	/**
+	 * Create a HourlyForecast object to store all the information describing a
+	 * particular hour in the forecast
+	 * 
+	 * @param time
+	 *            The time described by this hourly forecast
+	 * @param temp
+	 *            The temperature of the time
+	 * @param desc
+	 *            A description about the forecast
+	 * @param sc
+	 *            The sky cover percentage
+	 * @param cop
+	 *            The chance of precipitation
+	 * @param fl
+	 *            What it feels like
+	 * @param fll
+	 *            A label for what it feels like
+	 * @param wd
+	 *            The wind direction
+	 * @param ws
+	 *            The wind speed
+	 * @param dp
+	 *            Dew point
+	 * @param h
+	 *            Humidity
+	 */
+	public HourlyForecast(long time, int temp, String desc, String sc,
+			String cop, String fl, String fll, String wd, String ws, String dp,
+			String h) {
+		// Converting the time since epoch to a readable format
 		Date date = new Date(time);
 		this.time = date.toLocaleString();
 		int len = this.time.length();
-		this.time = this.time.substring(len-10,len);
-		
-		
+		// Filtering out only the time from the date
+		this.time = this.time.substring(len - 10, len);
+
+		// Saving all the other relavent data
 		this.temp = temp;
 		description = desc;
 		skyCover = sc;
@@ -43,48 +70,81 @@ public class HourlyForecast {
 		dewPoint = dp;
 		humidity = h;
 	}
-	
-	public String getTemp(){
+
+	/**
+	 * @return The temperature
+	 */
+	public String getTemp() {
 		return Integer.toString(temp);
 	}
-	
-	public String getTime(){
+
+	/**
+	 * @return The time described by the hourly forecast
+	 */
+	public String getTime() {
 		return time;
 	}
-	
-	public String getDescription(){
+
+	/**
+	 * @return A description of the forecast
+	 */
+	public String getDescription() {
 		return description;
 	}
-	
-	public String getSkyCover(){
+
+	/**
+	 * @return Sky cover percentage
+	 */
+	public String getSkyCover() {
 		return skyCover;
 	}
-	
-	public String getChanceOfPrecip(){
+
+	/**
+	 * @return The chance of precipitation
+	 */
+	public String getChanceOfPrecip() {
 		return chanceOfPrecip;
 	}
-	
-	public String getFeelsLike(){
+
+	/**
+	 * @return What it currently feels like
+	 */
+	public String getFeelsLike() {
 		return feelsLike;
 	}
-	
-	public String getFeelsLikeLabel(){
+
+	/**
+	 * @return A label for what it feels like
+	 */
+	public String getFeelsLikeLabel() {
 		return feelsLikeLabel;
 	}
-	
-	public String getWindDirection(){
+
+	/**
+	 * @return The wind direction
+	 */
+	public String getWindDirection() {
 		return windDirection;
 	}
-	
-	public String getWindSpeed(){
+
+	/**
+	 * @return The wind speed
+	 */
+	public String getWindSpeed() {
 		return windSpeed;
 	}
-	
-	public String getDewPoint(){
+
+	/**
+	 * @return The dew point
+	 */
+	public String getDewPoint() {
 		return dewPoint;
 	}
-	
-	public String getHumidity(){
+
+	/**
+	 * @return The humidity
+	 */
+	public String getHumidity() {
 		return humidity;
 	}
 }
