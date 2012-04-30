@@ -7,6 +7,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.List;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -143,7 +145,8 @@ public class WeatherBug implements LocationListener {
 					JSONObject hour;
 					HourlyForecast forecast;
 					int j = 0;
-					for (int i = 0; i < hourlyForecastList.length() && i < 8+j; i++) {
+					for (int i = 0; i < hourlyForecastList.length()
+							&& i < 8 + j; i++) {
 						hour = hourlyForecastList.getJSONObject(i);
 						forecast = new HourlyForecast(hour.getLong("dateTime"),
 								hour.getInt("temperature"),
@@ -157,9 +160,9 @@ public class WeatherBug implements LocationListener {
 								hour.getString("dewPoint"),
 								hour.getString("humidity"));
 						Log.i("WeatherBug", forecast.getTemp());
-						if(!forecast.outOfScope()){
+						if (!forecast.outOfScope()) {
 							hourlyForecast.add(forecast);
-						}else{
+						} else {
 							j++;
 						}
 					}
@@ -472,8 +475,12 @@ public class WeatherBug implements LocationListener {
 	 */
 	private void getCityFromZip(String zip) {
 		try {
-			Address address = geocoder.getFromLocationName(zip, 1).get(0);
-			setCity(address);
+			List<Address> addresses = geocoder.getFromLocationName("11419", 1);
+			if (addresses.size() > 0)
+				setCity(addresses.get(0));
+			else
+				city = "null";
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
