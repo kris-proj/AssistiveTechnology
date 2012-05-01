@@ -9,6 +9,7 @@ import android.os.Message;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 
 public class TheWeatherActivity extends Activity {
@@ -16,32 +17,14 @@ public class TheWeatherActivity extends Activity {
 	private ArrayList<DailyForecast> fiveDayForecast;
 	private ArrayList<HourlyForecast> hourlyForecast;
 	private TextView tv;
+	ListView lv;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
-		tv = (TextView) findViewById(R.id.text);
-		Button weekly = (Button) findViewById(R.id.button1);
-		Button daily = (Button) findViewById(R.id.button2);
-
-		weekly.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View arg0) {
-				wb.updateForecastWithZip("11419");
-			}
-		});
-
-		daily.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				wb.updateCurrentWithZip("10001");
-			}
-		});
-
+		
 		// A handler is needed to receive messages from weatherbug object
 		// It must have the handleMessage method overidden
 		Handler handler = new Handler() {
@@ -60,6 +43,10 @@ public class TheWeatherActivity extends Activity {
 		};
 
 		wb = new WeatherBug(handler, this);
+		
+		lv = (ListView) findViewById(R.id.listview);
+		
+		wb.updateCurrentWithZip("10001");
 	}
 
 	public void currentUpdated() {
@@ -67,21 +54,9 @@ public class TheWeatherActivity extends Activity {
 		// returns an array list of hourly forecasts
 
 		hourlyForecast = wb.getHourlyForecast();
-
-		String mock;
-		mock = wb.getCity() + "\n";
-		mock += "Currently: " + hourlyForecast.get(0).getTemp() + " deg. "
-				+ hourlyForecast.get(0).getDescription() + "\n\n";
-		mock += "TODAY's FORECAST: \n\n";
-		int totalItems = hourlyForecast.size();
-		HourlyForecast temp;
-		for (int i = 0; i < totalItems; i++) {
-			temp = hourlyForecast.get(i);
-			mock += temp.getTime() + ": " + temp.getTemp() + " deg. "
-					+ temp.getDescription() + "\n\n";
-		}
-
-		tv.setText(mock);
+		HourlyForecastAdapter adapter = new HourlyForecastAdapter(this, R.layout.hourly_listview_row, hourlyForecast);
+		lv.setAdapter(adapter);
+		
 	}
 
 	public void forecastUpdated() {
