@@ -64,6 +64,8 @@ public class WeatherBug implements LocationListener {
 
 	ArrayList<DailyForecast> weeklyForecast; // stores the weekly forecast
 	ArrayList<HourlyForecast> hourlyForecast; // stores the daily forecast
+	ArrayList<WeatherAdvisory> weatherAdvisories; // stores the weather
+													// advisories
 
 	private String urlString; // used when requesting data from WeatherBug
 
@@ -506,9 +508,8 @@ public class WeatherBug implements LocationListener {
 		urlString = urlString.replace("XXXXX", APIKey);
 		updateAdvisory();
 	}
-	
-	
-	private void updateAdvisory(){
+
+	private void updateAdvisory() {
 		/*
 		 * Create a new thread to run in the background. This is to ensure the
 		 * UI does not freeze up while retrieving data from the web server.
@@ -546,13 +547,23 @@ public class WeatherBug implements LocationListener {
 					 * current weather status.
 					 */
 					int count = json.getInt("alertCount");
-					Log.i("WeatherBug", "Alerts: "+count);
-					if(count > 0){
+					Log.i("WeatherBug", "Alerts: " + count);
+					JSONArray advisories = json.getJSONArray("alertList");
+					JSONObject advisory;
+					WeatherAdvisory wa;
+					weatherAdvisories = new ArrayList<WeatherAdvisory>();
+					if (count > 0) {
 						// Only get alerts of the count is more than 0
-						
+						for (int i = 0; i < count; i++) {
+							advisory = advisories.getJSONObject(i);
+							wa = new WeatherAdvisory(
+									advisory.getString("dateTimeBegins"),
+									advisory.getString("dateTimeEnds"));
+							wa.setDetails(advisory.getString("description"),
+									advisory.getString("message"));
+							weatherAdvisories.add(wa);
+						}
 					}
-					
-
 
 					// A new runnable to post to the UI thread
 					Runnable update = new Runnable() {
@@ -586,6 +597,13 @@ public class WeatherBug implements LocationListener {
 			}
 		};
 		background.start();
+	}
+
+	/**
+	 * @return A list of the weather advisories
+	 */
+	public ArrayList<WeatherAdvisory> getAdvisories() {
+		return weatherAdvisories;
 	}
 
 	// ===============LOCATION LISTENER METHODS===========================

@@ -16,6 +16,7 @@ public class TheWeatherActivity extends Activity {
 	private WeatherBug wb;
 	private ArrayList<DailyForecast> fiveDayForecast;
 	private ArrayList<HourlyForecast> hourlyForecast;
+	private ArrayList<WeatherAdvisory> weatherAdvisory;
 	private TextView tv;
 	ListView lv;
 
@@ -24,7 +25,7 @@ public class TheWeatherActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
-		
+		tv = (TextView) findViewById(R.id.text);
 		// A handler is needed to receive messages from weatherbug object
 		// It must have the handleMessage method overidden
 		Handler handler = new Handler() {
@@ -37,6 +38,15 @@ public class TheWeatherActivity extends Activity {
 				case WeatherBug.FORECAST:
 					forecastUpdated();
 					break;
+				case WeatherBug.ADVISORY:
+					weatherAdvisory = wb.getAdvisories();
+					int length = weatherAdvisory.size();
+					String mock = wb.getCity() + "\n\n";
+					for(int i = 0;i<length;i++){
+						mock += weatherAdvisory.get(i).toString() + "\n\n";
+					}
+					tv.setText(mock);
+					break;
 				}
 				super.handleMessage(msg);
 			}
@@ -44,9 +54,9 @@ public class TheWeatherActivity extends Activity {
 
 		wb = new WeatherBug(handler, this);
 		
-		lv = (ListView) findViewById(R.id.listview);
+		//lv = (ListView) findViewById(R.id.listview);
 		
-		wb.updateCurrentWithLoc();
+		wb.updateAdvisoryWithZip("74048");
 	}
 
 	public void currentUpdated() {

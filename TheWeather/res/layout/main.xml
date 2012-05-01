@@ -4,10 +4,9 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
-    <ListView 
-        android:id="@+id/listview"
+    <TextView 
+        android:id="@+id/text"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        />
+        android:layout_height="wrap_content"/>
 
 </LinearLayout>
