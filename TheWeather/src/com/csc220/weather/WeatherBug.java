@@ -61,6 +61,7 @@ public class WeatherBug implements LocationListener {
 	private double lat = 0; // latitude of current network location
 	private double log = 0; // longiture of current network location
 	private boolean forecastUpdate = false;
+	private boolean advisoryUpdate = false;
 
 	ArrayList<DailyForecast> weeklyForecast; // stores the weekly forecast
 	ArrayList<HourlyForecast> hourlyForecast; // stores the daily forecast
@@ -383,6 +384,9 @@ public class WeatherBug implements LocationListener {
 					if (forecastUpdate) {
 						urlString = baseURL_forecast_loc.replace("LAT",
 								Double.toString(lat));
+					} else if (advisoryUpdate) {
+						urlString = baseURL_advisory_loc.replace("LAT",
+								Double.toString(lat));
 					} else {
 						urlString = baseURL_hourly_loc.replace("LAT",
 								Double.toString(lat));
@@ -394,7 +398,12 @@ public class WeatherBug implements LocationListener {
 					if (forecastUpdate) {
 						updateForecast();
 						forecastUpdate = false;
-					} else {
+					} 
+					else if(advisoryUpdate){
+						updateAdvisory();
+						advisoryUpdate = false;
+					}
+					else {
 						updateCurent();
 					}
 					super.run();
@@ -415,8 +424,6 @@ public class WeatherBug implements LocationListener {
 		forecastUpdate = true;
 		// Simplifies getting the location
 		updateCurrentWithLoc();
-		// We are not longer updating the forecast. Allows today's hourly
-		// updates to occur normally again
 	}
 
 	/**
@@ -482,8 +489,9 @@ public class WeatherBug implements LocationListener {
 	 *            The zip to use
 	 */
 	private void getCityFromZip(String zip) {
+		Log.i("WeatherBug",zip);
 		try {
-			List<Address> addresses = geocoder.getFromLocationName("11419", 1);
+			List<Address> addresses = geocoder.getFromLocationName(zip, 1);
 			if (addresses.size() > 0)
 				setCity(addresses.get(0));
 			else
@@ -507,6 +515,12 @@ public class WeatherBug implements LocationListener {
 		urlString = baseURL_advisory_zip.replace("ZZZZZ", zip);
 		urlString = urlString.replace("XXXXX", APIKey);
 		updateAdvisory();
+	}
+
+	public void updateAdvisoryWithLoc() {
+		advisoryUpdate = true;
+
+		updateCurrentWithLoc();
 	}
 
 	private void updateAdvisory() {
