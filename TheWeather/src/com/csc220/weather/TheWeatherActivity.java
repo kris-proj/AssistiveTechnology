@@ -46,7 +46,7 @@ public class TheWeatherActivity extends Activity {
 		
 		lv = (ListView) findViewById(R.id.listview);
 		
-		wb.updateAdvisoryWithZip("74048");
+		wb.updateCurrentWithLoc();
 	}
 
 	public void currentUpdated() {
@@ -62,7 +62,7 @@ public class TheWeatherActivity extends Activity {
 	public void forecastUpdated() {
 		// The weekly forecast is returned as an arraylist of daily forecasts
 		fiveDayForecast = wb.get5DayForecast();
-
+		
 		String mock;
 		mock = wb.getCity() + "\n";
 		DailyForecast today = fiveDayForecast.get(0);
