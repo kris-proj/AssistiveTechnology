@@ -1,7 +1,6 @@
 package com.csc220.weather;
 
 import java.util.ArrayList;
-
 import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;

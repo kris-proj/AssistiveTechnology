@@ -44,6 +44,12 @@ public class WeatherBug implements LocationListener {
 	// The base URL for weekly forecast (zip)
 	private String baseURL_forecast_zip = "http://i.wxbug.net/REST/Direct/GetForecast.ashx?"
 			+ "zip=ZZZZZ&nf=5&l=en&c=US&api_key=XXXXX";
+	// The base URL for advisory (zip)
+	private String baseURL_advisory_zip = "http://i.wxbug.net/REST/Direct/GetAlert.ashx?"
+			+ "zip=ZZZZZ&api_key=XXXXX";
+	// The base URL for advisory (loc)
+	private String baseURL_advisory_loc = "http://i.wxbug.net/REST/Direct/GetAlert.ashx?"
+			+ "la=LAT&lo=LONG&api_key=XXXXX";
 
 	private Handler UIHandler; // Used to handle updates from WeatherBug object
 	private LocationManager locManager; // Used to get the users current
@@ -484,6 +490,12 @@ public class WeatherBug implements LocationListener {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void updateAdvisoryWithZip(String zip){
+		// Retrieve the city information from the zip
+		getCityFromZip(zip);
+		
 	}
 
 	// ===============LOCATION LISTENER METHODS===========================
