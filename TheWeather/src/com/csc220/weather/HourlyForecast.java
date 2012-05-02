@@ -63,7 +63,8 @@ public class HourlyForecast {
 			this.time = date.toLocaleString();
 			int len = this.time.length();
 			// Filtering out only the time from the date
-			this.time = this.time.substring(len - 11, len);
+			this.time = this.time.substring(len - 11, len); 
+			this.time = this.time.replace("00:", "");
 
 			// Saving all the other relavent data
 			this.temp = temp;
