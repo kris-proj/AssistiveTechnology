@@ -8,7 +8,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -44,6 +43,12 @@ public class WeatherBug implements LocationListener {
 	// The base URL for weekly forecast (zip)
 	private String baseURL_forecast_zip = "http://i.wxbug.net/REST/Direct/GetForecast.ashx?"
 			+ "zip=ZZZZZ&nf=5&l=en&c=US&api_key=XXXXX";
+	// The base URL for advisory (zip)
+	private String baseURL_advisory_zip = "http://i.wxbug.net/REST/Direct/GetAlert.ashx?"
+			+ "zip=ZZZZZ&api_key=XXXXX";
+	// The base URL for advisory (loc)
+	private String baseURL_advisory_loc = "http://i.wxbug.net/REST/Direct/GetAlert.ashx?"
+			+ "la=LAT&lo=LONG&api_key=XXXXX";
 
 	private Handler UIHandler; // Used to handle updates from WeatherBug object
 	private LocationManager locManager; // Used to get the users current
@@ -56,15 +61,19 @@ public class WeatherBug implements LocationListener {
 	private double lat = 0; // latitude of current network location
 	private double log = 0; // longiture of current network location
 	private boolean forecastUpdate = false;
+	private boolean advisoryUpdate = false;
 
 	ArrayList<DailyForecast> weeklyForecast; // stores the weekly forecast
 	ArrayList<HourlyForecast> hourlyForecast; // stores the daily forecast
+	ArrayList<WeatherAdvisory> weatherAdvisories; // stores the weather
+													// advisories
 
 	private String urlString; // used when requesting data from WeatherBug
 
 	// Constants to indicate what has been updated
 	public static final int CURRENT = 1;
 	public static final int FORECAST = 2;
+	public static final int ADVISORY = 3;
 
 	/**
 	 * @param handler
@@ -375,6 +384,9 @@ public class WeatherBug implements LocationListener {
 					if (forecastUpdate) {
 						urlString = baseURL_forecast_loc.replace("LAT",
 								Double.toString(lat));
+					} else if (advisoryUpdate) {
+						urlString = baseURL_advisory_loc.replace("LAT",
+								Double.toString(lat));
 					} else {
 						urlString = baseURL_hourly_loc.replace("LAT",
 								Double.toString(lat));
@@ -386,7 +398,12 @@ public class WeatherBug implements LocationListener {
 					if (forecastUpdate) {
 						updateForecast();
 						forecastUpdate = false;
-					} else {
+					} 
+					else if(advisoryUpdate){
+						updateAdvisory();
+						advisoryUpdate = false;
+					}
+					else {
 						updateCurent();
 					}
 					super.run();
@@ -407,8 +424,6 @@ public class WeatherBug implements LocationListener {
 		forecastUpdate = true;
 		// Simplifies getting the location
 		updateCurrentWithLoc();
-		// We are not longer updating the forecast. Allows today's hourly
-		// updates to occur normally again
 	}
 
 	/**
@@ -474,8 +489,9 @@ public class WeatherBug implements LocationListener {
 	 *            The zip to use
 	 */
 	private void getCityFromZip(String zip) {
+		Log.i("WeatherBug",zip);
 		try {
-			List<Address> addresses = geocoder.getFromLocationName("11419", 1);
+			List<Address> addresses = geocoder.getFromLocationName(zip, 1);
 			if (addresses.size() > 0)
 				setCity(addresses.get(0));
 			else
@@ -484,6 +500,124 @@ public class WeatherBug implements LocationListener {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * Puts together the proper URL to get advisories from a zip code and passes
+	 * it to the method which will get the advisory information
+	 * 
+	 * @param zip
+	 *            The zip code to get advisories for
+	 */
+	public void updateAdvisoryWithZip(String zip) {
+		// Retrieve the city information from the zip
+		getCityFromZip(zip);
+		urlString = baseURL_advisory_zip.replace("ZZZZZ", zip);
+		urlString = urlString.replace("XXXXX", APIKey);
+		updateAdvisory();
+	}
+
+	public void updateAdvisoryWithLoc() {
+		advisoryUpdate = true;
+
+		updateCurrentWithLoc();
+	}
+
+	private void updateAdvisory() {
+		/*
+		 * Create a new thread to run in the background. This is to ensure the
+		 * UI does not freeze up while retrieving data from the web server.
+		 * Without this background thread, the UI would stall until the data is
+		 * downloaded.
+		 */
+		Thread background = new Thread() {
+			@Override
+			public void run() {
+
+				Log.i("WeatherBug", urlString);
+				// Download the JSON data
+				try {
+					// Open a new URL Connection and download the data
+					URL url = new URL(urlString);
+					URLConnection weatherBugConnection = url.openConnection();
+					BufferedReader input = new BufferedReader(
+							new InputStreamReader(
+									weatherBugConnection.getInputStream()));
+					String inputLine;
+					// Keep reading lines until there is no more to be read
+					while ((inputLine = input.readLine()) != null) {
+						data += inputLine;
+					}
+					Log.i("WeatherBug", data);
+
+					// Create a JSON object from the data that was read
+					json = new JSONObject(data);
+					data = "";
+					input.close(); // Close the input stream
+					/*
+					 * Obtain a list of the hourly forecast data. This is a list
+					 * of JSON objects which each contain information about a
+					 * certain hour's weather data. The first JSON object is the
+					 * current weather status.
+					 */
+					int count = json.getInt("alertCount");
+					Log.i("WeatherBug", "Alerts: " + count);
+					JSONArray advisories = json.getJSONArray("alertList");
+					JSONObject advisory;
+					WeatherAdvisory wa;
+					weatherAdvisories = new ArrayList<WeatherAdvisory>();
+					if (count > 0) {
+						// Only get alerts of the count is more than 0
+						for (int i = 0; i < count; i++) {
+							advisory = advisories.getJSONObject(i);
+							wa = new WeatherAdvisory(
+									advisory.getString("dateTimeBegins"),
+									advisory.getString("dateTimeEnds"));
+							wa.setDetails(advisory.getString("description"),
+									advisory.getString("message"));
+							weatherAdvisories.add(wa);
+						}
+					}
+
+					// A new runnable to post to the UI thread
+					Runnable update = new Runnable() {
+
+						@Override
+						public void run() {
+							/*
+							 * Create and send a message to the handler running
+							 * on the UI thread indicating that the current
+							 * weather status has been updated.
+							 */
+							Message msg = new Message();
+							msg.arg1 = ADVISORY;
+							UIHandler.dispatchMessage(msg);
+						}
+					};
+					/*
+					 * Post the runnable to the handler. This allows the handler
+					 * to continue to run on the UI thread so the views can be
+					 * updated
+					 */
+					UIHandler.post(update);
+
+				} catch (MalformedURLException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}
+		};
+		background.start();
+	}
+
+	/**
+	 * @return A list of the weather advisories
+	 */
+	public ArrayList<WeatherAdvisory> getAdvisories() {
+		return weatherAdvisories;
 	}
 
 	// ===============LOCATION LISTENER METHODS===========================
