@@ -38,6 +38,17 @@ public class DailyForecast {
 	 *            The high temperature for the day
 	 * @param low
 	 *            The Low temperature for the day
+	 * 
+	 * @param title
+	 *            A title for the day (Monday, Tuesday,..)
+	 * @param high
+	 *            The high temperature for the day
+	 * @param low
+	 *            The low temperature of the day
+	 * @param dayCondition
+	 *            A condition name (to download appropriate icon)
+	 * @param nightCondition
+	 *            A condition name for th night (to download appropriate icon)
 	 */
 	public DailyForecast(String title, String high, String low,
 			String dayCondition, String nightCondition) {
@@ -45,9 +56,17 @@ public class DailyForecast {
 		this.low = low;
 		this.title = title;
 		dayConditionImg = downloadImage(imageURLString + dayCondition + ".png");
-		nightConditionImg = downloadImage(imageURLString + nightCondition + ".png");
+		nightConditionImg = downloadImage(imageURLString + nightCondition
+				+ ".png");
 	}
 
+	/**
+	 * Download an image from a URL
+	 * 
+	 * @param urlString
+	 *            A string containing the URL to the image to download
+	 * @return a Bitmap object of the image downloaded
+	 */
 	private Bitmap downloadImage(String urlString) {
 		URL url;
 		BufferedInputStream bis = null;

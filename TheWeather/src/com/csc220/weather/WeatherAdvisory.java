@@ -1,5 +1,9 @@
 package com.csc220.weather;
 
+/**
+ * @author Dharmdeo Singh
+ *
+ */
 public class WeatherAdvisory {
 	private String startTime; // The start time of the advisory
 	private String endTime; // When the advisory is over
