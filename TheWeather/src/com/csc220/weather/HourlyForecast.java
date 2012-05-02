@@ -1,6 +1,15 @@
 package com.csc220.weather;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Date;
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
 /**
  * @author Dharmdeo Singh
@@ -17,10 +26,12 @@ public class HourlyForecast {
 	private String feelsLikeLabel; // A label for what it feels like
 	private String windDirection; // The wind direction for the time
 	private String windSpeed; // The wind speed predicted for this hourly
-	private String condition; // 
 								// forecast
 	private String dewPoint; // The dew point
 	private String humidity; // The humidity of the time
+	
+	private Bitmap currentCondition;
+	private String urlString = "http://img.weather.weatherbug.com/forecast/icons/localized/125x105/en/trans/";
 	
 	private boolean outofscope = false;
 
@@ -79,6 +90,27 @@ public class HourlyForecast {
 			dewPoint = dp;
 			humidity = h;
 		}
+	}
+	
+	public void setImage(String cond){
+		urlString += cond + ".png";
+		URL url;
+		BufferedInputStream bis = null;
+		try {
+			url = new URL(urlString);
+			URLConnection con = url.openConnection();
+			InputStream is = con.getInputStream();
+			bis = new BufferedInputStream(is);
+			currentCondition = BitmapFactory.decodeStream(bis);
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public Bitmap getImage(){
+		return currentCondition;
 	}
 
 	/**

@@ -174,6 +174,9 @@ public class WeatherBug implements LocationListener {
 						} else {
 							j++;
 						}
+						// only obtain the image for the current weather
+						if(hourlyForecast.size() == 1)
+							hourlyForecast.get(0).setImage(hour.getString("icon"));
 					}
 
 					// A new runnable to post to the UI thread

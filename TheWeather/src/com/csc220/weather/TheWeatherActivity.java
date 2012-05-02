@@ -6,9 +6,6 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -63,16 +60,15 @@ public class TheWeatherActivity extends Activity {
 		
 		//lv = (ListView) findViewById(R.id.listview);
 		
-		wb.updateForecastWithZip("10001");
+		wb.updateCurrentWithZip("10001");
 	}
 
 	public void currentUpdated() {
 		// The hourly forecast can be obtained with this method call. It
 		// returns an array list of hourly forecasts
-
 		hourlyForecast = wb.getHourlyForecast();
-		HourlyForecastAdapter adapter = new HourlyForecastAdapter(this, R.layout.hourly_listview_row, hourlyForecast);
-		lv.setAdapter(adapter);
+		tv.setText("Currently");
+		iv.setImageBitmap(hourlyForecast.get(0).getImage());
 		
 	}
 
