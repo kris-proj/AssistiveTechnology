@@ -517,12 +517,20 @@ public class WeatherBug implements LocationListener {
 		updateAdvisory();
 	}
 
+	/**
+	 * Uses the current location of the user to find any weather advisories in
+	 * that location
+	 */
 	public void updateAdvisoryWithLoc() {
-		advisoryUpdate = true;
-
+		advisoryUpdate = true; // used in updateCurrentWithLoc
+		// Recycling the updateCurrentWithLoc
 		updateCurrentWithLoc();
 	}
 
+	/**
+	 * The generic updateAdvisory function. Used to get the avisories based on
+	 * the URL set by the updateAdvisoryWithLoc or updateAdvisoryWithZip methods
+	 */
 	private void updateAdvisory() {
 		/*
 		 * Create a new thread to run in the background. This is to ensure the

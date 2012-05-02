@@ -79,9 +79,9 @@ public class TheWeatherActivity extends Activity {
 	public void forecastUpdated() {
 		// The weekly forecast is returned as an arraylist of daily forecasts
 		fiveDayForecast = wb.get5DayForecast();
-		iv.setImageBitmap(fiveDayForecast.get(0).getDayImage());
-		tv.setText(fiveDayForecast.get(0).getTitle());
-		iv2.setImageBitmap(fiveDayForecast.get(0).getNightImage());
-		tv2.setText(fiveDayForecast.get(0).getTitle() + " Night");
+		iv.setImageBitmap(fiveDayForecast.get(4).getDayImage());
+		tv.setText(fiveDayForecast.get(4).getTitle());
+		iv2.setImageBitmap(fiveDayForecast.get(4).getNightImage());
+		tv2.setText(fiveDayForecast.get(4).getTitle() + " Night");
 	}
 }
