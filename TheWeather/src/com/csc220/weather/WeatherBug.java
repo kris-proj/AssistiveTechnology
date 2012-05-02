@@ -275,7 +275,9 @@ public class WeatherBug implements LocationListener {
 						high = dayForecast.getString("high");
 						low = dayForecast.getString("low");
 						title = dayForecast.getString("title");
-						day = new DailyForecast(title, high, low);
+						day = new DailyForecast(title, high, low,
+								dayForecast.getString("dayIcon"),
+								dayForecast.getString("nightIcon"));
 
 						// Retrieve and add the day details for each day
 						desc = dayForecast.getString("dayDesc");
@@ -398,12 +400,10 @@ public class WeatherBug implements LocationListener {
 					if (forecastUpdate) {
 						updateForecast();
 						forecastUpdate = false;
-					} 
-					else if(advisoryUpdate){
+					} else if (advisoryUpdate) {
 						updateAdvisory();
 						advisoryUpdate = false;
-					}
-					else {
+					} else {
 						updateCurent();
 					}
 					super.run();
@@ -489,7 +489,7 @@ public class WeatherBug implements LocationListener {
 	 *            The zip to use
 	 */
 	private void getCityFromZip(String zip) {
-		Log.i("WeatherBug",zip);
+		Log.i("WeatherBug", zip);
 		try {
 			List<Address> addresses = geocoder.getFromLocationName(zip, 1);
 			if (addresses.size() > 0)

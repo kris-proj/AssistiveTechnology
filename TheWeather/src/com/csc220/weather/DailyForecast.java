@@ -1,5 +1,14 @@
 package com.csc220.weather;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
 /**
  * @author Dharmdeo Singh
  * 
@@ -18,6 +27,10 @@ public class DailyForecast {
 	private String high; // high temperature
 	private String low; // low temperature
 
+	private String imageURLString = "http://img.weather.weatherbug.com/forecast/icons/localized/125x105/en/trans/";
+	private Bitmap dayConditionImg;
+	private Bitmap nightConditionImg;
+
 	/**
 	 * @param title
 	 *            The name of the day
@@ -26,10 +39,38 @@ public class DailyForecast {
 	 * @param low
 	 *            The Low temperature for the day
 	 */
-	public DailyForecast(String title, String high, String low) {
+	public DailyForecast(String title, String high, String low,
+			String dayCondition, String nightCondition) {
 		this.high = high;
 		this.low = low;
 		this.title = title;
+		dayConditionImg = downloadImage(imageURLString + dayCondition + ".png");
+		nightConditionImg = downloadImage(imageURLString + nightCondition + ".png");
+	}
+
+	private Bitmap downloadImage(String urlString) {
+		URL url;
+		BufferedInputStream bis = null;
+		try {
+			url = new URL(urlString);
+			URLConnection con = url.openConnection();
+			InputStream is = con.getInputStream();
+			bis = new BufferedInputStream(is);
+
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return BitmapFactory.decodeStream(bis);
+	}
+
+	public Bitmap getDayImage() {
+		return dayConditionImg;
+	}
+
+	public Bitmap getNightImage() {
+		return nightConditionImg;
 	}
 
 	/*

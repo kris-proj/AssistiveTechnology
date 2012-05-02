@@ -17,6 +17,7 @@ public class HourlyForecast {
 	private String feelsLikeLabel; // A label for what it feels like
 	private String windDirection; // The wind direction for the time
 	private String windSpeed; // The wind speed predicted for this hourly
+	private String condition; // 
 								// forecast
 	private String dewPoint; // The dew point
 	private String humidity; // The humidity of the time

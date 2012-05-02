@@ -9,6 +9,7 @@ import android.os.Message;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -17,8 +18,11 @@ public class TheWeatherActivity extends Activity {
 	private ArrayList<DailyForecast> fiveDayForecast;
 	private ArrayList<HourlyForecast> hourlyForecast;
 	private ArrayList<WeatherAdvisory> weatherAdvisory;
-	private TextView tv;
+	TextView tv;
 	ListView lv;
+	ImageView iv;
+	ImageView iv2;
+	TextView tv2;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -26,6 +30,9 @@ public class TheWeatherActivity extends Activity {
 		setContentView(R.layout.main);
 
 		tv = (TextView) findViewById(R.id.text);
+		iv = (ImageView) findViewById(R.id.imageView1);
+		tv2 = (TextView) findViewById(R.id.text2);
+		iv2 = (ImageView) findViewById(R.id.imageView2);
 		// A handler is needed to receive messages from weatherbug object
 		// It must have the handleMessage method overidden
 		Handler handler = new Handler() {
@@ -56,7 +63,7 @@ public class TheWeatherActivity extends Activity {
 		
 		//lv = (ListView) findViewById(R.id.listview);
 		
-		wb.updateAdvisoryWithZip("74048");
+		wb.updateForecastWithZip("10001");
 	}
 
 	public void currentUpdated() {
@@ -72,19 +79,9 @@ public class TheWeatherActivity extends Activity {
 	public void forecastUpdated() {
 		// The weekly forecast is returned as an arraylist of daily forecasts
 		fiveDayForecast = wb.get5DayForecast();
-		
-		String mock;
-		mock = wb.getCity() + "\n";
-		DailyForecast today = fiveDayForecast.get(0);
-		mock += "Today: " + today.getTitle() + " " + today.getHigh() + "/"
-				+ today.getLow() + "\n\n";
-		mock += "The next 4 days: \n\n";
-		DailyForecast day;
-		for (int i = 1; i < 5; i++) {
-			day = fiveDayForecast.get(i);
-			mock += day.getTitle() + " " + day.getHigh() + "/" + day.getLow()
-					+ "\n\n";
-		}
-		tv.setText(mock);
+		iv.setImageBitmap(fiveDayForecast.get(0).getDayImage());
+		tv.setText(fiveDayForecast.get(0).getTitle());
+		iv2.setImageBitmap(fiveDayForecast.get(0).getNightImage());
+		tv2.setText(fiveDayForecast.get(0).getTitle() + " Night");
 	}
 }
