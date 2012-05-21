@@ -60,7 +60,7 @@ public class TheWeatherActivity extends Activity {
 		
 		//lv = (ListView) findViewById(R.id.listview);
 		
-		wb.updateCurrentWithZip("10001");
+		wb.updateForecastWithLoc();
 	}
 
 	public void currentUpdated() {
