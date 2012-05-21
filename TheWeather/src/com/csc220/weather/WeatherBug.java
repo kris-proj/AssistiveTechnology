@@ -59,7 +59,7 @@ public class WeatherBug implements LocationListener {
 
 	private String data = ""; // stores the data read from server
 	private double lat = 0; // latitude of current network location
-	private double log = 0; // longiture of current network location
+	private double log = 0; // longitude of current network location
 	private boolean forecastUpdate = false;
 	private boolean advisoryUpdate = false;
 
@@ -110,6 +110,9 @@ public class WeatherBug implements LocationListener {
 		 * downloaded.
 		 */
 		Thread background = new Thread() {
+			/* (non-Javadoc)
+			 * @see java.lang.Thread#run()
+			 */
 			@Override
 			public void run() {
 
@@ -171,12 +174,15 @@ public class WeatherBug implements LocationListener {
 						Log.i("WeatherBug", forecast.getTemp());
 						if (!forecast.outOfScope()) {
 							hourlyForecast.add(forecast);
+							hourlyForecast.get(hourlyForecast.size()-1).setImage(
+									hour.getString("icon"));
 						} else {
 							j++;
 						}
 						// only obtain the image for the current weather
-						if(hourlyForecast.size() == 1)
-							hourlyForecast.get(0).setImage(hour.getString("icon"));
+						/*if (hourlyForecast.size() == 1)
+							hourlyForecast.get(hourlyForecast.size()-1).setImage(
+									hour.getString("icon"));*/
 					}
 
 					// A new runnable to post to the UI thread
